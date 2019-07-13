@@ -6,7 +6,9 @@ RSpec.describe "using this gem in a Rails app" do
     around do |example|
       Dir.mktmpdir do |tmpdir|
         Dir.chdir(tmpdir) do
-          system('rails new test_app')
+          expect(
+            system('rails new test_app')
+          ).to be true
 
           Dir.chdir("test_app") do
             app_gemfile       = Pathname.pwd/'Gemfile'
@@ -17,10 +19,12 @@ RSpec.describe "using this gem in a Rails app" do
               gem 'active_record_callbacks_cop', path: '#{absolute_gem_path}'
             GEMFILE
 
-            system(
-              { 'BUNDLE_GEMFILE' => app_gemfile.to_s },
-              'bundle install',
-            )
+            expect(
+              system(
+                { 'BUNDLE_GEMFILE' => app_gemfile.to_s },
+                'bundle install',
+              )
+            ).to be true
 
             (Pathname.pwd/'.rubocop.yml').write(<<~YAML)
               require: active_record_callbacks_cop
