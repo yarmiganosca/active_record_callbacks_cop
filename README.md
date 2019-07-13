@@ -1,28 +1,56 @@
 # ActiveRecordCallbacksCop
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/active_record_callbacks_cop`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Use this [RuboCop](https://github.com/rubocop-hq/rubocop) extension to stop yourself from using ActiveRecord callbacks. They'll only hurt you in the long run and its best to avoid them from the start.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Just install the `active_record_callbacks_cop` gem
 
-```ruby
+```bash
+gem install active_record_callbacks_cop
+```
+
+or if you use bundler put this in your `Gemfile`
+
+```
 gem 'active_record_callbacks_cop'
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install active_record_callbacks_cop
-
 ## Usage
 
-TODO: Write usage instructions here
+You need to tell RuboCop to load the RSpec extension. There are three ways to do this:
+
+### RuboCop configuration file
+
+Put this into your `.rubocop.yml`.
+
+```yaml
+require: active_record_callbacks_cop
+```
+
+Alternatively, use the following array notation when specifying multiple extensions.
+
+```yaml
+require:
+  - rubocop-other-extension
+  - active_record_callbacks_cop
+```
+
+Now you can run `rubocop` and it will automatically load this cop together with your other cops.
+
+### Command line
+
+```bash
+rubocop --require active_record_callbacks_cop
+```
+
+### Rake task
+
+```ruby
+RuboCop::RakeTask.new do |task|
+  task.requires << 'active_record_callbacks_cop'
+end
+```
 
 ## Development
 
