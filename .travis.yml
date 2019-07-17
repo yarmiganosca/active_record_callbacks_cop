@@ -4,4 +4,9 @@ language: ruby
 cache: bundler
 rvm:
   - 2.5.3
-before_install: gem install bundler -v 2.0.1
+before_install: gem install bundler -v 1.17.3
+gemfile:
+  - gemfiles/rails3.gemfile
+  - gemfiles/rails4.gemfile
+  - gemfiles/rails5.gemfile
+script: bundle exec rspec
