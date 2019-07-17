@@ -8,11 +8,14 @@ RSpec.describe "using this gem in a Rails app" do
       Dir.mktmpdir do |tmpdir|
         Bundler.with_clean_env do
           Dir.chdir(tmpdir) do
-            expect(
-              system('rails new test_app --skip-bundle')
-            ).to be true
+            result, _ = Open3.capture2('rails new test_app --skip-bundle')
 
-            puts "HELLLLLLLLLLLLLLLLLLLLLLLLLOOO"
+            raise result
+            exit 1
+
+            expect(
+              result
+            ).to be true
 
             Dir.chdir("test_app") do
               app_gemfile       = Pathname.pwd/'Gemfile'
