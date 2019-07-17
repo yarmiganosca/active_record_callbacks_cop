@@ -6,6 +6,7 @@ rvm:
   - 2.5.3
 before_install: gem install bundler -v 1.17.3
 gemfile:
+  - Gemfile
   - gemfiles/rails3.gemfile
   - gemfiles/rails4.gemfile
   - gemfiles/rails5.gemfile
