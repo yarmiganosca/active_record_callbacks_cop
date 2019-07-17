@@ -6,12 +6,12 @@ RSpec.describe "using this gem in a Rails app" do
   context "once required in .rubocop.yml" do
     around do |example|
       Dir.mktmpdir do |tmpdir|
-        Bundler.with_clean_env do
-          Dir.chdir(tmpdir) do
-            expect(
-              system('rails new test_app --skip-bundle 1>&2')
-            ).to be true
+        Dir.chdir(tmpdir) do
+          expect(
+            system('rails new test_app --skip-bundle 1>&2')
+          ).to be true
 
+          Bundler.with_clean_env do
             Dir.chdir("test_app") do
               app_gemfile       = Pathname.pwd/'Gemfile'
               absolute_gem_path = (Pathname.new(__FILE__)/'..'/'..').realpath
