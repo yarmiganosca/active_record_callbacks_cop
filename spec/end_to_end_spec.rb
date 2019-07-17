@@ -12,6 +12,8 @@ RSpec.describe "using this gem in a Rails app" do
               system('rails new test_app --skip-bundle')
             ).to be true
 
+            puts "HELLLLLLLLLLLLLLLLLLLLLLLLLOOO"
+
             Dir.chdir("test_app") do
               app_gemfile       = Pathname.pwd/'Gemfile'
               absolute_gem_path = (Pathname.new(__FILE__)/'..'/'..').realpath
