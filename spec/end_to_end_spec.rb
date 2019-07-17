@@ -1,36 +1,39 @@
 require 'tmpdir'
 require 'open3'
+require 'bundler'
 
 RSpec.describe "using this gem in a Rails app" do
   context "once required in .rubocop.yml" do
     around do |example|
       Dir.mktmpdir do |tmpdir|
-        Dir.chdir(tmpdir) do
-          expect(
-            system('rails new test_app')
-          ).to be true
-
-          Dir.chdir("test_app") do
-            app_gemfile       = Pathname.pwd/'Gemfile'
-            absolute_gem_path = (Pathname.new(__FILE__)/'..'/'..').realpath
-
-            app_gemfile.write(<<~GEMFILE, app_gemfile.size)
-              gem 'rubocop'
-              gem 'active_record_callbacks_cop', path: '#{absolute_gem_path}'
-            GEMFILE
-
+        Bundler.with_clean_env do
+          Dir.chdir(tmpdir) do
             expect(
-              system(
-                { 'BUNDLE_GEMFILE' => app_gemfile.to_s },
-                'bundle install',
-              )
+              system('rails new test_app --skip-bundle')
             ).to be true
 
-            (Pathname.pwd/'.rubocop.yml').write(<<~YAML)
-              require: active_record_callbacks_cop
-            YAML
+            Dir.chdir("test_app") do
+              app_gemfile       = Pathname.pwd/'Gemfile'
+              absolute_gem_path = (Pathname.new(__FILE__)/'..'/'..').realpath
 
-            example.run
+              app_gemfile.write(<<~GEMFILE, app_gemfile.size)
+                gem 'rubocop'
+                gem 'active_record_callbacks_cop', path: '#{absolute_gem_path}'
+              GEMFILE
+
+              expect(
+                system(
+                  { 'BUNDLE_GEMFILE' => app_gemfile.to_s },
+                  'bundle install',
+                )
+              ).to be true
+
+              (Pathname.pwd/'.rubocop.yml').write(<<~YAML)
+                require: active_record_callbacks_cop
+              YAML
+
+              example.run
+            end
           end
         end
       end
@@ -45,7 +48,7 @@ RSpec.describe "using this gem in a Rails app" do
         end
       MODEL
 
-      rubocop_output, process_status = Open3.capture2('rubocop app/models/my_model.rb')
+      rubocop_output, process_status = Open3.capture2('bundle exec rubocop app/models/my_model.rb')
 
       expect(rubocop_output).to match(
         /^app\/models\/my_model\.rb(?<rubocop_fluff>.*)ActiveRecordCallbacks:\ Don't\ use\ ActiveRecord\ callbacks\n\ \ before_save\ :do_the_thing$/m
