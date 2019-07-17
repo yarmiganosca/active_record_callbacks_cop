@@ -8,8 +8,10 @@ RSpec.describe "using this gem in a Rails app" do
       Dir.mktmpdir do |tmpdir|
         Bundler.with_clean_env do
           Dir.chdir(tmpdir) do
+            result = system('rails new test_app --skip-bundle')
+
             expect(
-              system('rails new test_app --skip-bundle')
+              result
             ).to be true
 
             Dir.chdir("test_app") do
