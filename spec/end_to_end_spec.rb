@@ -9,7 +9,7 @@ RSpec.describe "using this gem in a Rails app" do
         Bundler.with_clean_env do
           Dir.chdir(tmpdir) do
             expect(
-              system('bundle exec rails new test_app --skip-bundle')
+              system('rails new test_app --skip-bundle 1>&2')
             ).to be true
 
             Dir.chdir("test_app") do
