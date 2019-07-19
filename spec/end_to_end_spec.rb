@@ -2,6 +2,8 @@ require 'tmpdir'
 require 'open3'
 require 'bundler'
 
+require 'active_record_callbacks_cop'
+
 RSpec.describe "using this gem in a Rails app" do
   context "once required in .rubocop.yml" do
     around do |example|
@@ -51,7 +53,7 @@ RSpec.describe "using this gem in a Rails app" do
       rubocop_output, process_status = Open3.capture2('bundle exec rubocop app/models/my_model.rb')
 
       expect(rubocop_output).to match(
-        /^app\/models\/my_model\.rb(?<rubocop_fluff>.*)ActiveRecordCallbacks:\ Don't\ use\ ActiveRecord\ callbacks\n\ \ before_save\ :do_the_thing$/m
+        /^app\/models\/my_model\.rb(?<rubocop_fluff>.*)ActiveRecordCallbacks:\ #{ActiveRecordCallbacksCop::Cop::MSG}\n\ \ before_save\ :do_the_thing$/m
       )
 
       expect(process_status).to_not be_success
