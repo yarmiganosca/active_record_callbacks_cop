@@ -5,12 +5,14 @@ module ActiveRecordCallbacksCop
     let(:config) { RuboCop::Config.new }
 
     callback_names = %i[
+      before_validation after_validation
       before_save around_save after_save
       before_create around_create after_create
       before_destroy around_destroy after_destroy
       after_commit
       after_create_commit after_update_commit after_destroy_commit
       after_rollback
+      after_touch
     ]
 
     callback_names.each do |callback_name|
