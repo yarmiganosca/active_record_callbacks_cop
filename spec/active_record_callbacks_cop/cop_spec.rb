@@ -14,32 +14,128 @@ module ActiveRecordCallbacksCop
     ]
 
     callback_names.each do |callback_name|
-      it "registers an offense when `#{callback_name}` is used in an ApplicationRecord subclass" do
-        callback_line = "  #{callback_name} :do_the_thing"
-        offense_line  = "  #{"^" * (callback_line.chars.size - 2)} Don't use ActiveRecord callbacks"
+      context "when `#{callback_name}` is used in an ApplicationRecord subclass" do
+        it "registers an offense" do
+          callback_line = "  #{callback_name} :do_the_thing"
+          offense_line  = "  #{"^" * (callback_line.chars.size - 2)} #{described_class::MSG}"
 
-        application_record_text = [
-          "class MyModel < ApplicationRecord",
-          callback_line,
-          offense_line,
-          "end"
-        ].join("\n")
+          application_record_text = [
+            "class MyModel < ApplicationRecord",
+            callback_line,
+            offense_line,
+            "end"
+          ].join("\n")
 
-        expect_offense(application_record_text)
+          expect_offense(application_record_text)
+        end
+
+        it "registers an offense when `#{callback_name}` is used in an ActiveRecord::Base subclass" do
+          callback_line = "  #{callback_name} :do_the_thing"
+          offense_line  = "  #{"^" * (callback_line.chars.size - 2)} #{described_class::MSG}"
+
+          active_record_base_text = [
+            "class MyModel < ActiveRecord::Base",
+            callback_line,
+            offense_line,
+            "end"
+          ].join("\n")
+
+          expect_offense(active_record_base_text)
+        end
+      end
+    end
+
+    context "in a class with no parent class" do
+      context "when before_save is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            class A
+              before_save :do_the_thing
+            end
+          RUBY
+        end
       end
 
-      it "registers an offense when `#{callback_name}` is used in an ActiveRecord::Base subclass" do
-        callback_line = "  #{callback_name} :do_the_thing"
-        offense_line  = "  #{"^" * (callback_line.chars.size - 2)} Don't use ActiveRecord callbacks"
+      context "when another class method is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            class A
+              some_class_method :do_the_thing
+            end
+          RUBY
+        end
+      end
+    end
 
-        active_record_base_text = [
-          "class MyModel < ActiveRecord::Base",
-          callback_line,
-          offense_line,
-          "end"
-        ].join("\n")
+    context "in a class with a parent class we don't care about" do
+      context "when before_save is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            class A < B
+              before_save :do_the_thing
+            end
+          RUBY
+        end
+      end
 
-        expect_offense(active_record_base_text)
+      context "when another class method is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            class A < B
+              some_class_method :do_the_thing
+            end
+          RUBY
+        end
+      end
+    end
+
+    context "in a RSpec example group" do
+      context "when a class method is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            RSpec.describe Something do
+              it "does something" do
+                expect(something)
+              end
+            end
+          RUBY
+        end
+      end
+    end
+
+    context "inside a method" do
+      context "when before_save is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            class A
+              def something
+                before_save :do_the_thing
+              end
+            end
+          RUBY
+        end
+      end
+    end
+
+    context "in a module" do
+      context "when before_save is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            module A
+              before_save :do_the_thing
+            end
+          RUBY
+        end
+      end
+
+      context "when another class method is used" do
+        it "doesn't register an offense" do
+          expect_no_offenses(<<~RUBY)
+            module A
+              some_class_method :do_the_thing
+            end
+          RUBY
+        end
       end
     end
 

@@ -6,11 +6,13 @@ module ActiveRecordCallbacksCop
       "ActiveRecordCallbacks"
     end
 
-    MSG = "Don't use ActiveRecord callbacks"
+    MSG = "Don't use ActiveRecord callbacks to add logic to your database interactions."
 
     def on_send(node)
-      return unless parent_class_names.include?(node.parent.parent_class.const_name)
       return unless callback_names.include?(node.method_name)
+      return unless node.parent.class_type? &&
+        node.parent.parent_class &&
+        parent_class_names.include?(node.parent.parent_class.const_name)
 
       add_offense(node)
     end
