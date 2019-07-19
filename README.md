@@ -2,9 +2,23 @@
 
 Use this [RuboCop](https://github.com/rubocop-hq/rubocop) extension to stop yourself from using ActiveRecord callbacks. They'll only hurt you in the long run and its best to avoid them from the start.
 
+These are the callbacks ActiveRecord provides:
+
+- `before_validation`/`after_validation`
+- `before_create`/`around_create`/`after_create`
+- `before_save`/`around_save`/`after_save`
+- `before_destroy`/`around_destroy`/`after_destroy`
+- `after_touch`
+- `after_commit`
+- `after_create_commit`/`after_update_commit`/`after_destroy_commit`
+- `after_rollback`
+- `after_initialize`/`after_find`
+
+This cop registers offenses whenever it sees any of these class methods called in `ApplicationRecord` or `ActiveRecord::Base` subclasses, except for `after_iniitalize` and `after_find`.
+
 ## Installation
 
-Just install the `active_record_callbacks_cop` gem
+Install the `active_record_callbacks_cop` gem
 
 ```bash
 gem install active_record_callbacks_cop

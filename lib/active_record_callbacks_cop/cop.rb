@@ -23,7 +23,6 @@ module ActiveRecordCallbacksCop
       %w(ActiveRecord::Base ApplicationRecord)
     end
 
-    # TODO: decide whether to ban after_initialize/after_find
     # TODO: maybe there should be separate cops for groups of callbacks?
     def callback_names
       %i(

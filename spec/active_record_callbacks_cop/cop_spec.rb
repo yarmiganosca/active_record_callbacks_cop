@@ -4,7 +4,7 @@ module ActiveRecordCallbacksCop
 
     let(:config) { RuboCop::Config.new }
 
-    callback_names = %i[
+    banned_callback_names = %i[
       before_validation after_validation
       before_save around_save after_save
       before_create around_create after_create
@@ -15,7 +15,7 @@ module ActiveRecordCallbacksCop
       after_touch
     ]
 
-    callback_names.each do |callback_name|
+    banned_callback_names.each do |callback_name|
       context "when `#{callback_name}` is used in an ApplicationRecord subclass" do
         it "registers an offense" do
           callback_line = "  #{callback_name} :do_the_thing"
@@ -30,8 +30,10 @@ module ActiveRecordCallbacksCop
 
           expect_offense(application_record_text)
         end
+      end
 
-        it "registers an offense when `#{callback_name}` is used in an ActiveRecord::Base subclass" do
+      context "when `#{callback_name}` is used in an ActiveRecord::Base subclass" do
+        it "registers an offense" do
           callback_line = "  #{callback_name} :do_the_thing"
           offense_line  = "  #{"^" * (callback_line.chars.size - 2)} #{described_class::MSG}"
 
@@ -43,6 +45,30 @@ module ActiveRecordCallbacksCop
           ].join("\n")
 
           expect_offense(active_record_base_text)
+        end
+      end
+    end
+
+    allowed_callback_names = %i[after_initialize after_find]
+
+    allowed_callback_names.each do |callback_name|
+      context "when `#{callback_name}` is used in an ApplicationRecord subclass" do
+        it "registers no offenses" do
+          expect_no_offenses(<<~RUBY)
+            class MyModel < ApplicationRecord
+              #{callback_name} :do_the_thing
+            end
+          RUBY
+        end
+      end
+
+      context "when `#{callback_name}` is used in an ActiveRecord::Base subclass" do
+        it "registers no offenses" do
+          expect_no_offenses(<<~RUBY)
+            class MyModel < ActiveRecord::Base
+              #{callback_name} :do_the_thing
+            end
+          RUBY
         end
       end
     end
