@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "appraisal"
 
-  spec.add_dependency "rubocop", ">= 0.72.0" # just copied rubocop-rails' dependency constraint for this
+  spec.add_dependency "rubocop", ">= 0.87.0"
 end
